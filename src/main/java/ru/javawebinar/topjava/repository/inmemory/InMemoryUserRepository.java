@@ -14,6 +14,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InMemoryUserRepository implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
 
+    private static Comparator<User> userComparatorByName = new Comparator<User>() {
+        @Override
+        public int compare(User o1, User o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
+    private static Comparator<User> userComparatorByEmail = new Comparator<User>() {
+        @Override
+        public int compare(User o1, User o2) {
+            return o1.getEmail().compareTo(o2.getEmail());
+        }
+    };
+
     private Map<Integer, User> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -45,12 +58,7 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         List<User> userList = new ArrayList<>(repository.values());
-        userList.sort(new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        userList.sort(userComparatorByName.thenComparing(userComparatorByEmail));
         return userList;
     }
 
@@ -58,11 +66,10 @@ public class InMemoryUserRepository implements UserRepository {
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
         List<User> userList = getAll();
-        for (User user : userList) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
-        }
-        return null;
+        User user = userList.stream()
+                .filter(user1 -> user1.getEmail().equals(email))
+                .findAny()
+                .orElse(null);
+        return user;
     }
 }

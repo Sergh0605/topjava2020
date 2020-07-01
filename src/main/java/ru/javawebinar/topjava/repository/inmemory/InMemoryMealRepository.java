@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,30 +43,27 @@ public class InMemoryMealRepository implements MealRepository {
             return meal;
         }
         // handle case: update, but not present in storage
-        if (meal.getUserId().equals(userId)) {
-            return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
-        }
-        log.info("save {} from User {} - UserId mismatch", meal, userId);
-        return null;
-
+        get(meal.getId(), userId);
+        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
     public boolean delete(int id, int userId) {
-        Meal meal = get(id, userId);
-        if (meal == null) {
-            return false;
-        }
-        return repository.remove(id) != null;
+        get(id, userId);
+        if (repository.remove(id) != null) return true;
+        throw new NotFoundException("Meal not found");
     }
 
     @Override
     public Meal get(int id, int userId) {
         Meal meal = repository.get(id);
+        if (meal == null) {
+            throw new NotFoundException("Meal not found");
+        }
         if (meal.getUserId().equals(userId)) {
             return meal;
         }
-        return null;
+        throw new NotFoundException("UserId mismatch");
     }
 
     @Override

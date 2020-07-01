@@ -6,8 +6,11 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
 public class MealRestController {
@@ -15,30 +18,29 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public static int userId = 1;
-
     public List<MealTo> getAll() {
-        return MealsUtil.getTos(service.getAll(userId), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
     public MealTo get(int id) {
-        Meal meal = service.get(id, userId);
-        return MealsUtil.createTo(meal, service.isExcess(meal, MealsUtil.DEFAULT_CALORIES_PER_DAY));
+        Meal meal = service.get(id, SecurityUtil.authUserId());
+        return MealsUtil.createTo(meal, service.isExcess(meal, SecurityUtil.authUserCaloriesPerDay()));
     }
 
     public MealTo create(MealTo mealTo) {
-        Meal meal = new Meal(mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), userId);
-        meal = service.create(meal, userId);
-        return MealsUtil.createTo(meal, service.isExcess(meal, MealsUtil.DEFAULT_CALORIES_PER_DAY));
+        Meal meal = new Meal(mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), SecurityUtil.authUserId());
+        meal = service.create(meal, SecurityUtil.authUserId());
+        return MealsUtil.createTo(meal, service.isExcess(meal, SecurityUtil.authUserCaloriesPerDay()));
     }
 
     public void delete(int id) {
-        service.delete(id, userId);
+        service.delete(id, SecurityUtil.authUserId());
     }
 
-    public void update(MealTo mealTo) {
-        Meal meal = new Meal(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), userId);
-        service.update(meal, userId);
+    public void update(MealTo mealTo, int id) {
+        Meal meal = new Meal(mealTo.getId(), mealTo.getDateTime(), mealTo.getDescription(), mealTo.getCalories(), SecurityUtil.authUserId());
+        assureIdConsistent(meal, id);
+        service.update(meal, SecurityUtil.authUserId());
     }
 
 }
