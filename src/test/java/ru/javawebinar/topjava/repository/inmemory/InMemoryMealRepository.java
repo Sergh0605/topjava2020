@@ -30,10 +30,16 @@ public class InMemoryMealRepository implements MealRepository {
     // Map  userId -> mealRepository
     private final Map<Integer, InMemoryBaseRepository<Meal>> usersMealsMap = new ConcurrentHashMap<>();
 
+    public void init()
     {
-        MealsUtil.MEALS.forEach(meal -> save(meal, USER_ID));
-        save(new Meal(LocalDateTime.of(2015, Month.JUNE, 1, 14, 0), "Админ ланч", 510), ADMIN_ID);
-        save(new Meal(LocalDateTime.of(2015, Month.JUNE, 1, 21, 0), "Админ ужин", 1500), ADMIN_ID);
+        usersMealsMap.clear();
+        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 350), USER_ID);
+        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 12, 0), "Обед", 1350), USER_ID);
+        save(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 19, 0), "Ужин", 350), USER_ID);
+        save(new Meal(LocalDateTime.of(2020, Month.MARCH, 30, 10, 30), "Завтрак", 600), ADMIN_ID);
+        save(new Meal(LocalDateTime.of(2020, Month.MARCH, 30, 13, 0), "Завтрак", 600), ADMIN_ID);
+        save(new Meal(LocalDateTime.of(2020, Month.APRIL, 15, 18, 0), "Завтрак", 600), ADMIN_ID);
+        save(new Meal(LocalDateTime.of(2020, Month.APRIL, 15, 10, 12), "Завтрак", 3350), USER_ID);
     }
 
 
