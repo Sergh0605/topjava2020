@@ -25,7 +25,7 @@
         <!--DB-->
         <postgresql.version>42.2.14</postgresql.version>
         <!--    Tests  -->
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <assertj.version>3.16.1</assertj.version>
 
         <!-- Hibernate -->
