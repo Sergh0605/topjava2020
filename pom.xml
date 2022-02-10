@@ -29,7 +29,7 @@
         <assertj.version>3.16.1</assertj.version>
 
         <!-- Hibernate -->
-        <hibernate.version>5.4.18.Final</hibernate.version>
+        <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
         <javax-el.version>3.0.1-b11</javax-el.version>
     </properties>
